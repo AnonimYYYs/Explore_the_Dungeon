@@ -10,6 +10,12 @@ fun newRandomMob(): Character<CharRace, CharClass> {
 
 class Character<R, C>(val Race: R, val Class: C) where R: CharRace, C: CharClass {
 
+    // stats
+    var stats = Stats(Race.stats + Class.stats)
+    var hp = stats.maxHp()
+    var mp = stats.maxMp()
+
+    // equipment
     var weapon: Weapon = when(Class){
         is Mage -> BasicStaff()
         is Warrior -> BasicSword()
@@ -22,16 +28,26 @@ class Character<R, C>(val Race: R, val Class: C) where R: CharRace, C: CharClass
         else -> BasicArmor()
     }
 
-    var hp = Race.maxHp
+    // inventory
+    var inventory = arrayOf<Item>()
 
-    var inventory = arrayOf<Item>(BasicStaff(), IronSword(), BasicShirt())
 
     fun dealDamage(): Int {
-        return(weapon.getDamage(Race.physicDamageModifier * Class.physicDamageModifier))
+        val modifier = when(weapon.damageType){
+            0 -> stats.physDamageModifier()
+            1 -> stats.magicDamageModifier()
+            else -> 1.0f
+        }
+        return(weapon.getDamage(modifier))
     }
 
-    fun receivePhysDamage(damage: Int){
-        hp -= (damage * (1 - armor.physDef)).toInt()
+    fun receiveDamage(damage: Int, type: Int){
+        val modifier = when(type){
+            0 -> stats.physDefenceModifier()
+            1 -> stats.magicDefenceModifier()
+            else -> 1.0f
+        }
+        hp -= armor.reducedDmg(damage, modifier, type)
         if(hp < 0) {
             hp = 0
         }

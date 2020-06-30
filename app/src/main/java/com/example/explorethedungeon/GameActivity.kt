@@ -29,42 +29,64 @@ class GameActivity : AppCompatActivity() {
         player = Character(playerRace, playerClass)
         mob = newRandomMob()
 
-        textView2.text = """
-            |ur hp is ${player.hp}
-            |mob hp is ${mob.hp}
-        """.trimMargin()
+        enemy_label.text = "enemy is ${mob.Race.name} and ${mob.Class.name}"
+        enemy_hp.text = "hp: ${mob.hp}/${mob.stats.maxHp()}"
+        enemy_weapon.text = "weapon is ${mob.weapon.name} (${mob.weapon.description})"
+        enemy_armor.text = "armor is ${mob.armor.name} (${mob.armor.description})"
 
-
-
-
+        player_label.text = "player is ${player.Race.name} and ${player.Class.name}"
+        player_hp.text = "hp: ${player.hp}/${player.stats.maxHp()}"
+        player_weapon.text = "weapon is ${player.weapon.name} (${player.weapon.description})"
+        player_armor.text = "armor is ${player.armor.name} (${player.armor.description})"
     }
 
-    fun dealDmg(view: View) {
-        val z = player.dealDamage()
-        val x = mob.dealDamage()
-        player.receivePhysDamage(x)
-        mob.receivePhysDamage(z)
-        inventory_list.text = """
-            |ur dmg is ${z}
-            |mob dmg is ${x}
-        """.trimMargin()
-        textView2.text = """
-            |ur hp is ${player.hp}
-            |mob hp is ${mob.hp}
-        """.trimMargin()
-        textView3.text = """
-            |ur char is ${player.Race.name} and ${player.Class.name}.
-            |mob char is ${mob.Race.name} and ${mob.Class.name}.
-            |ur char wears ${player.weapon.name} and ${player.armor.name}.
-            |mob char wears ${mob.weapon.name} and ${mob.armor.name}.
+    fun onDD(view: View) {
+        val playerDamage = player.dealDamage()
+
+        val mobDamage = player.dealDamage()
+
+        damage_log.text = """
+            |ur damage is ${playerDamage} and type is ${stringType(player.weapon.damageType)}
+            |mob damage is ${mobDamage} and type is ${stringType(mob.weapon.damageType)}
         """.trimMargin()
 
+        mob.receiveDamage(playerDamage, player.weapon.damageType)
+        player.receiveDamage(mobDamage, mob.weapon.damageType)
+
         if(mob.isDead()){
-            mob = newRandomMob()
+            damage_log.text = """
+                ${damage_log.text}
+                mob is dead woohoo!!!
+            """.trimMargin()
+            newMob()
         }
+
         if(player.isDead()){
-            player.hp = 1000
+            damage_log.text = """
+                ${damage_log.text}
+                ur fully healed.....
+            """.trimMargin()
+            player.hp = player.stats.maxHp()
         }
+
+        enemy_hp.text = "hp: ${mob.hp}/${mob.stats.maxHp()}"
+        player_hp.text = "hp: ${player.hp}/${player.stats.maxHp()}"
+    }
+
+    fun stringType(x: Int): String {
+        return when(x){
+            0 -> ("phys")
+            1 -> ("mag")
+            else -> ("")
+        }
+    }
+
+    fun newMob(){
+        mob = newRandomMob()
+        enemy_label.text = "enemy is ${mob.Race.name} and ${mob.Class.name}"
+        enemy_hp.text = "hp: ${mob.hp}/${mob.stats.maxHp()}"
+        enemy_weapon.text = "weapon is ${mob.weapon.name} (${mob.weapon.description})"
+        enemy_armor.text = "armor is ${mob.armor.name} (${mob.armor.description})"
     }
 
 }

@@ -8,7 +8,7 @@ val classList = arrayOf(
 
 interface CharClass {
     val name: String
-    val physicDamageModifier: Float
+    val stats: RawStats
 }
 
 fun getCharClass(cls: String?): CharClass {
@@ -22,21 +22,21 @@ fun getCharClass(cls: String?): CharClass {
 
 class NullClass: CharClass {
     override val name = "NullClass"
-    override val physicDamageModifier = 0.0f
+    override val stats = RawStats(0,0,0,0,0)
 }
 
 class Warrior: CharClass {
     override val name = "Warrior"
-    override val physicDamageModifier = 10.0f
+    override val stats = RawStats(10,10,6,3,3)
 }
 
 class Mage: CharClass {
     override val name = "Mage"
-    override val physicDamageModifier = 5.0f
+    override val stats = RawStats(4,6,5,10,10)
 }
 
 class Rogue: CharClass {
     override val name = "Rogue"
-    override val physicDamageModifier = 13.0f
+    override val stats = RawStats(7,7,10,5,5)
 }
 
